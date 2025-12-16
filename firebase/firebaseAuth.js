@@ -1,21 +1,24 @@
-import { auth } from "./firebaseConfig";
-import { 
-  createUserWithEmailAndPassword, 
+// firebase/firebaseAuth.js
+import {
+  initializeAuth,
+  getReactNativePersistence,
+  createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
-  signOut 
+  updateProfile,
 } from "firebase/auth";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
-// Benutzer registrieren
-export async function register(email, password) {
-  return createUserWithEmailAndPassword(auth, email, password);
+import { app } from "./firebaseConfig";
+
+export const auth = initializeAuth(app, {
+  persistence: getReactNativePersistence(AsyncStorage),
+});
+
+export async function registerUser(fullName, email, password) {
+  const res = await createUserWithEmailAndPassword(auth, email, password);
+  await updateProfile(res.user, { displayName: fullName });
 }
 
-// Benutzer einloggen
-export async function login(email, password) {
+export async function loginUser(email, password) {
   return signInWithEmailAndPassword(auth, email, password);
-}
-
-// Benutzer ausloggen
-export async function logout() {
-  return signOut(auth);
 }

@@ -1,45 +1,71 @@
+// app/screens/SignInScreen.tsx
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
-import React from "react";
+import React, { useState } from "react";
 import {
-    SafeAreaView,
-    StyleSheet,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    View,
+  SafeAreaView,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
+  Alert,
 } from "react-native";
 import { RootStackParamList } from "../navigation/Root";
+import { loginUser } from "../../firebase/firebaseAuth.js";
 
 
 type Props = NativeStackScreenProps<RootStackParamList, "SignIn">;
 
 const SignInScreen: React.FC<Props> = ({ navigation }) => {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+
+  async function handleLogin() {
+    try {
+      await loginUser(email, password);
+      navigation.replace("Tabs"); // nach erfolgreichem Login in die App
+    } catch (error: any) {
+      Alert.alert("Login fehlgeschlagen", error.message);
+    }
+  }
+
   return (
     <SafeAreaView style={styles.container}>
       <Text style={styles.logo}>WatchMate</Text>
 
       <View style={styles.box}>
-        <Text style={styles.title}>Create an account</Text>
-        <Text style={styles.subtitle}>Enter your email to sign up</Text>
+        <Text style={styles.title}>Welcome back!</Text>
+        <Text style={styles.subtitle}>Log in to continue</Text>
 
         <TextInput
           placeholder="email@domain.com"
           style={styles.input}
           keyboardType="email-address"
+          autoCapitalize="none"
+          value={email}
+          onChangeText={setEmail}
         />
 
-        <TouchableOpacity
-          style={styles.btn}
-          onPress={() => navigation.navigate("Tabs")}
-        >
-          <Text style={styles.btnText}>Continue</Text>
+        <TextInput
+          placeholder="Password"
+          style={styles.input}
+          secureTextEntry
+          value={password}
+          onChangeText={setPassword}
+        />
+
+        <TouchableOpacity style={styles.btn} onPress={handleLogin}>
+          <Text style={styles.btnText}>Sign In</Text>
         </TouchableOpacity>
 
         <TouchableOpacity
-          style={styles.registerBtn}
+          style={{ marginTop: 14 }}
           onPress={() => navigation.navigate("Register")}
         >
-          <Text style={styles.registerText}>Create account</Text>
+          <Text style={styles.registerText}>
+            Noch keinen Account?{" "}
+            <Text style={{ fontWeight: "700" }}>Jetzt registrieren</Text>
+          </Text>
         </TouchableOpacity>
       </View>
     </SafeAreaView>
@@ -78,7 +104,9 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   btnText: { color: "#fff", fontSize: 16, fontWeight: "600" },
-
-  registerBtn: { marginTop: 14, alignItems: "center" },
-  registerText: { color: "#000", fontSize: 14, fontWeight: "500" },
+  registerText: {
+    color: "#000",
+    fontSize: 14,
+    textAlign: "center",
+  },
 });

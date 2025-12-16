@@ -1,33 +1,39 @@
 import React from "react";
-import { createStackNavigator } from "@react-navigation/stack";
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
 
-import CollectionScreen from "../screens/CollectionScreen";
-import AddWatchCollection from "../screens/AddWatchCollection";
+import SignInScreen from "../screens/SignInScreen";
+import RegisterScreen from "../screens/RegisterScreen";
+import TabNavigator from "./TabNavigator";
 import WatchDetailScreen from "../screens/WatchDetailScreen";
+import AddWatchCollection from "../screens/AddWatchCollection";
 
-import { RootStackParamList } from "../types/navigation";
+export type RootStackParamList = {
+  SignIn: undefined;
+  Register: undefined;
 
-const Stack = createStackNavigator<RootStackParamList>();
+  Tabs: undefined;
+
+  WatchDetailScreen: { watch: any };
+  AddWatchCollection: undefined;
+};
+
+const Stack = createNativeStackNavigator<RootStackParamList>();
 
 export default function RootNavigator() {
   return (
-    <Stack.Navigator>
-      <Stack.Screen 
-        name="Collection" 
-        component={CollectionScreen}
-        options={{ title: "Collection" }}
-      />
+    <Stack.Navigator screenOptions={{ headerShown: false }}>
+      {/* LOGIN FIRST */}
+      <Stack.Screen name="SignIn" component={SignInScreen} />
+      <Stack.Screen name="Register" component={RegisterScreen} />
 
-      <Stack.Screen 
+      {/* MAIN APP */}
+      <Stack.Screen name="Tabs" component={TabNavigator} />
+
+      <Stack.Screen name="WatchDetailScreen" component={WatchDetailScreen} />
+      <Stack.Screen
         name="AddWatchCollection"
         component={AddWatchCollection}
-        options={{ title: "Neue Uhr hinzufügen" }}
-      />
-
-      <Stack.Screen 
-        name="WatchDetailScreen"
-        component={WatchDetailScreen}
-        options={{ headerShown: false }}
+        options={{ headerShown: true, title: "Neue Uhr hinzufügen" }}
       />
     </Stack.Navigator>
   );

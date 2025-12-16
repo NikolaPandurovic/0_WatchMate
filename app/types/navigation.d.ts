@@ -1,5 +1,13 @@
 export type RootStackParamList = {
   Collection: undefined;
-  AddWatchCollection: undefined;
-  WatchDetailScreen: { watch: any };
+
+  // Add = ohne Parameter
+  // Edit = mit watch
+  AddWatchCollection: {
+    watch?: any;
+  };
+
+  WatchDetailScreen: {
+    watch: any;
+  };
 };

@@ -1,35 +1,58 @@
 import { db } from "./firebaseConfig";
-import { 
-  collection, doc, setDoc, getDoc, getDocs, updateDoc, deleteDoc 
+import {
+  collection,
+  doc,
+  setDoc,
+  getDoc,
+  getDocs,
+  updateDoc,
+  deleteDoc,
+  serverTimestamp,
 } from "firebase/firestore";
 
-// Neue Uhr anlegen
+// ➕ ADD WATCH
 export async function addWatch(userId, watchId, watchData) {
-  return setDoc(doc(db, "watches", watchId), {
-    userId,
-    ...watchData,
-  });
+  return setDoc(
+    doc(db, "users", userId, "watches", watchId),
+    {
+      ...watchData,
+      createdAt: serverTimestamp(),
+      updatedAt: serverTimestamp(),
+    }
+  );
 }
 
-// Uhr auslesen
-export async function getWatch(watchId) {
-  return getDoc(doc(db, "watches", watchId));
+// 📄 GET ONE WATCH
+export async function getWatch(userId, watchId) {
+  return getDoc(doc(db, "users", userId, "watches", watchId));
 }
 
-// Alle Uhren eines Users
+// 📂 GET ALL WATCHES OF USER
 export async function getUserWatches(userId) {
-  const snapshot = await getDocs(collection(db, "watches"));
-  return snapshot.docs
-    .map((d) => ({ id: d.id, ...d.data() }))
-    .filter((item) => item.userId === userId);
+  const snapshot = await getDocs(
+    collection(db, "users", userId, "watches")
+  );
+
+  return snapshot.docs.map((d) => ({
+    id: d.id,
+    ...d.data(),
+  }));
 }
 
-// Uhr aktualisieren
-export async function updateWatch(watchId, updateData) {
-  return updateDoc(doc(db, "watches", watchId), updateData);
+// ✏️ UPDATE WATCH
+export async function updateWatch(userId, watchId, updateData) {
+  return updateDoc(
+    doc(db, "users", userId, "watches", watchId),
+    {
+      ...updateData,
+      updatedAt: serverTimestamp(),
+    }
+  );
 }
 
-// Uhr löschen
-export async function deleteWatch(watchId) {
-  return deleteDoc(doc(db, "watches", watchId));
+// 🗑️ DELETE WATCH
+export async function deleteWatch(userId, watchId) {
+  return deleteDoc(
+    doc(db, "users", userId, "watches", watchId)
+  );
 }

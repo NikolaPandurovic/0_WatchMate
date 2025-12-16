@@ -1,36 +1,68 @@
+// app/screens/RegisterScreen.tsx
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
-import React from "react";
+import React, { useState } from "react";
 import {
-    SafeAreaView,
-    StyleSheet,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    View,
+  SafeAreaView,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
+  Alert,
 } from "react-native";
 import { RootStackParamList } from "../navigation/Root";
+import { registerUser } from "../../firebase/firebaseAuth";
 
 type Props = NativeStackScreenProps<RootStackParamList, "Register">;
 
 const RegisterScreen: React.FC<Props> = ({ navigation }) => {
+  const [fullName, setFullName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+
+  async function handleRegister() {
+    try {
+      await registerUser(fullName, email, password);
+      navigation.replace("Tabs");
+    } catch (error: any) {
+      Alert.alert("Registrierung fehlgeschlagen", error.message);
+    }
+  }
+
   return (
     <SafeAreaView style={styles.container}>
       <Text style={styles.header}>Create Account</Text>
 
       <View style={styles.box}>
-        <TextInput placeholder="Full Name" style={styles.input} />
-        <TextInput placeholder="Email" style={styles.input} />
-        <TextInput placeholder="Password" secureTextEntry style={styles.input} />
+        <TextInput
+          placeholder="Full Name"
+          style={styles.input}
+          value={fullName}
+          onChangeText={setFullName}
+        />
+        <TextInput
+          placeholder="Email"
+          style={styles.input}
+          autoCapitalize="none"
+          value={email}
+          onChangeText={setEmail}
+        />
+        <TextInput
+          placeholder="Password"
+          secureTextEntry
+          style={styles.input}
+          value={password}
+          onChangeText={setPassword}
+        />
 
-        <TouchableOpacity
-          style={styles.btn}
-          onPress={() => navigation.navigate("Tabs")}
-        >
+        <TouchableOpacity style={styles.btn} onPress={handleRegister}>
           <Text style={styles.btnText}>Register</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity onPress={() => navigation.goBack()}>
-          <Text style={styles.link}>Already have an account?</Text>
+        <TouchableOpacity onPress={() => navigation.navigate("SignIn")}>
+          <Text style={styles.link}>
+            Schon einen Account? Jetzt einloggen
+          </Text>
         </TouchableOpacity>
       </View>
     </SafeAreaView>
